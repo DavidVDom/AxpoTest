@@ -1,9 +1,23 @@
 using Axpo;
 using AxpoTest;
+using Serilog;
 
-var builder = Host.CreateApplicationBuilder(args);
-builder.Services.AddTransient<IPowerService, PowerService>();
-builder.Services.AddHostedService<Worker>();
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.File(
+        Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs/AxpoTest-.log"),
+        rollingInterval: RollingInterval.Day,
+        rollOnFileSizeLimit: true)
+    .CreateLogger();
 
-var host = builder.Build();
+var host = Host.CreateDefaultBuilder(args)
+    .UseWindowsService(options => options.ServiceName = "AxpoTestService")
+    .UseSerilog()
+    .ConfigureServices((hostContext, services) =>
+    {
+        services.AddHostedService<Worker>();
+        services.AddSingleton<IPowerService, PowerService>();
+    })
+    .Build();
+
+
 host.Run();

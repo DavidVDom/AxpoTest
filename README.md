@@ -1,3 +1,10 @@
+# Notes
+## If needed as window service:
+To publish the service (from the project folder):
+      `dotnet publish -o .\publish -c Release -p:PublishSingleFile = true`
+TO create the windows service:
+      `sc.exe create AxpoTestService binpath= "<path-to-published-exe-file>"`
+
 # Coding Challenge Requirements
 ## Overview
 The power traders require an intra-day report to give them their day ahead power position. The report should output the aggregated volume per hour to a CSV file based upon a configurable schedule.
