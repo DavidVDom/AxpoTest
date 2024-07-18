@@ -1,9 +1,10 @@
 # Notes
 ## If needed as window service:
 To publish the service (from the project folder):
-      `dotnet publish -o .\publish -c Release -p:PublishSingleFile = true`
+`dotnet publish -o .\publish -c Release -p:PublishSingleFile = true`
+
 TO create the windows service:
-      `sc.exe create AxpoTestService binpath= "<path-to-published-exe-file>"`
+`sc.exe create AxpoTestService binpath= "<path-to-published-exe-file>"`
 
 # Coding Challenge Requirements
 ## Overview
