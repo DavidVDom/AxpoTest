@@ -1,38 +1,32 @@
-using Axpo;
-using System.ComponentModel.DataAnnotations;
+using AxpoTest.Abstractions;
 
 namespace AxpoTest
 {
     public class Worker : BackgroundService
     {
         private readonly ILogger<Worker> _logger;
-        private readonly IPowerService _powerService;
         private readonly IConfiguration _configuration;
-        private readonly string? _csvPath;
-        private readonly int _minutesInterval;
+        private readonly IGenerateCV _generateCV;
 
-        public Worker(ILogger<Worker> logger, IPowerService powerService, IConfiguration configuration)
+        public Worker(
+            ILogger<Worker> logger,
+            IConfiguration configuration,
+            IGenerateCV generateCV)
         {
             _logger = logger;
-            _powerService = powerService;
             _configuration = configuration;
-
-            _csvPath = _configuration.GetSection("csvPath").Value;
-            _minutesInterval = int.Parse(_configuration.GetSection("minutesInterval").Value);
+            _generateCV = generateCV;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            var minutesInterval = int.Parse(_configuration.GetSection("minutesInterval").Value);
+
             while (!stoppingToken.IsCancellationRequested)
             {
-                if (_logger.IsEnabled(LogLevel.Information))
-                {
-                    _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-                }
+                _generateCV.GenerateCSVAsync(DateTime.Now);
 
-                GenerateCSVAsync();
-
-                await Task.Delay(1000 * 60 * _minutesInterval, stoppingToken);
+                await Task.Delay(60000 * minutesInterval, stoppingToken);
             }
         }
 
@@ -51,11 +45,6 @@ namespace AxpoTest
         public override void Dispose()
         {
             _logger.LogInformation("Worker DISPOSED at: {time}", DateTimeOffset.Now);
-        }
-
-        private async void GenerateCSVAsync()
-        {
-            var algo = await _powerService.GetTradesAsync(DateTime.Now);
         }
     }
 }

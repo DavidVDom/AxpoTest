@@ -1,5 +1,6 @@
 using Axpo;
 using AxpoTest;
+using AxpoTest.Abstractions;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration()
@@ -16,6 +17,7 @@ var host = Host.CreateDefaultBuilder(args)
     {
         services.AddHostedService<Worker>();
         services.AddSingleton<IPowerService, PowerService>();
+        services.AddSingleton<IGenerateCV, GenerateCV>();
     })
     .Build();
 
