@@ -1,5 +1,6 @@
 ﻿using Axpo;
 using AxpoTest.Abstractions;
+using System.Text;
 
 namespace AxpoTest
 {
@@ -14,6 +15,16 @@ namespace AxpoTest
             _logger = logger;
             _powerService = powerService;
             _configuration = configuration;
+
+            CreateCSVFolder(_configuration.GetSection("csvAbsolutePath").Value);
+        }
+
+        public void CreateCSVFolder(string path)
+        {
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
         }
 
         public async void GenerateCSVAsync(DateTime date)
@@ -25,12 +36,21 @@ namespace AxpoTest
             {
                 var trades = await _powerService.GetTradesAsync(currentDate);
 
-                //if (_logger.IsEnabled(LogLevel.Information))
-                //{
-                //    _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-                //}
+                // TODO: de momento volcamos lo que venga a un csv, luego ya agregamos
 
-                _logger.LogInformation($"returned {trades.Count()} items");
+                var csv = new StringBuilder();
+                csv.AppendLine("Local Time, Volume");
+                foreach (var trade in trades)
+                {
+                    csv.AppendLine($"{trade.Date.ToString()}, {trade.Periods.Length}");
+                }
+
+                File.WriteAllText(Path.Combine(csvAbsolutePath, $"PowerPosition_{currentDate:yyyyMMdd_HHmm}.csv"), csv.ToString());
+
+                //using (var writer = new StreamWriter(Path.Combine(csvAbsolutePath, $"PowerPosition_{currentDate:yyyyMMdd_HHmm}.csv")));
+                //using (var csv=new CsvWriter)
+
+                //_logger.LogInformation($"returned {trades.Count()} items");
             }
             catch (Exception ex)
             {

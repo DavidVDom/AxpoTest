@@ -1,4 +1,8 @@
-# Notes
+﻿# Notes
+
+## Change in configuration:
+Change the values ​​of the properties `csvAbsolutePath` and `minutesInterval` in the appsettings.js configuration file as needed.
+
 ## To run it as a windows service:
 To publish the service (from the project folder):
 `dotnet publish -o .\publish -c Release -p:PublishSingleFile = true`
