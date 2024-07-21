@@ -2,6 +2,6 @@
 {
     public interface IGenerateCV
     {
-        void GenerateCSVAsync(DateTime date);
+        Task GenerateCSVAsync(DateTime date);
     }
 }

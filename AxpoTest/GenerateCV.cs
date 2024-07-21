@@ -23,7 +23,7 @@ namespace AxpoTest
             _utilsMap = GetInitializedMap();
         }
 
-        public async void GenerateCSVAsync(DateTime date)
+        public async Task GenerateCSVAsync(DateTime date)
         {
             var currentDate = date;
             var csvAbsolutePath = _configuration.GetSection("csvAbsolutePath").Value;
