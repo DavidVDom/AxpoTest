@@ -1,6 +1,7 @@
 ﻿using Axpo;
 using AxpoTest.Abstractions;
 using AxpoTest.Model;
+using System.Globalization;
 using System.Text;
 
 namespace AxpoTest
@@ -10,6 +11,7 @@ namespace AxpoTest
         private readonly ILogger<Worker> _logger;
         private readonly IPowerService _powerService;
         private readonly IConfiguration _configuration;
+        private readonly Dictionary<int, string> _utilsMap;
 
         public GenerateCV(ILogger<Worker> logger, IPowerService powerService, IConfiguration configuration)
         {
@@ -18,20 +20,20 @@ namespace AxpoTest
             _configuration = configuration;
 
             CreateCSVFolder(_configuration.GetSection("csvAbsolutePath").Value);
+            _utilsMap = GetInitializedMap();
         }
 
         public async void GenerateCSVAsync(DateTime date)
         {
             var currentDate = date;
             var csvAbsolutePath = _configuration.GetSection("csvAbsolutePath").Value;
-            var map = GetInitializedMap();
 
             try
             {
                 var trades = await _powerService.GetTradesAsync(currentDate);
                 var csvList = new List<CsvResult>();
 
-                foreach (var (key, value) in map)
+                foreach (var (key, value) in _utilsMap)
                 {
                     double volumeAggregate = 0;
                     foreach (var trade in trades)
@@ -49,7 +51,7 @@ namespace AxpoTest
                 csv.AppendLine("Local Time, Volume");
                 foreach (var item in csvList)
                 {
-                    csv.AppendLine($"{item.LocalTime}, {item.Volume}");
+                    csv.AppendLine($"{item.LocalTime}, {item.Volume.ToString(CultureInfo.InvariantCulture)}");
                 }
 
                 File.WriteAllText(Path.Combine(csvAbsolutePath, $"PowerPosition_{currentDate:yyyyMMdd_HHmm}.csv"), csv.ToString());
