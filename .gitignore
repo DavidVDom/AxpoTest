@@ -3,6 +3,10 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+# Custom folders to ignore
+trades-reports
+logs
+
 # User-specific files
 *.rsuser
 *.suo
